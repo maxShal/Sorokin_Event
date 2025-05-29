@@ -40,10 +40,6 @@ public class LocationService {
     @Transactional
     public Location createLocation(Location location)
     {
-        if (location.getId() < 0 || location.getId() == null)
-        {
-            throw new IllegalArgumentException("Неверный ID");
-        }
         if(location.getAddress().isEmpty())
         {
             throw new IllegalArgumentException("Неверный адрес");
@@ -61,7 +57,13 @@ public class LocationService {
         {
             throw new IllegalArgumentException("Неверный адрес");
         }
-        return mapper.toModel(repository.save(mapper.toEntity(mapper.toDto(location))));
+        LocationEntity entity = repository.findById(location.getId())
+                .orElseThrow(()-> new IllegalArgumentException("Локация не найдена с ID: " + location.getId()));
+        LocationEntity updated = mapper.toEntity(location);
+        entity.setDescription(updated.getDescription());
+        entity.setCapacity(updated.getCapacity());
+        entity.setAddress(updated.getAddress());
+        return mapper.toModel(repository.save(entity));
     }
     @Transactional
     public void deleteLocation(Location location)
@@ -79,6 +81,8 @@ public class LocationService {
         {
             throw new IllegalArgumentException("Неверный ID");
         }
+        LocationEntity entity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Данного элемента не существует"));
         repository.deleteById(id);
     }
 }
