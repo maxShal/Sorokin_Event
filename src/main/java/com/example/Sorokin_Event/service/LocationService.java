@@ -19,7 +19,6 @@ public class LocationService {
 
     private LocationRepository repository;
 
-    @Autowired
     public LocationService(LocationMapper mapper, LocationRepository repository){
         this.mapper = mapper;
         this.repository = repository;

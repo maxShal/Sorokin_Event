@@ -22,7 +22,7 @@ public class LocationController {
 
     private LocationService service;
 
-    @Autowired
+
     public LocationController(LocationMapper mapper, LocationService service)
     {
         this.service = service;
