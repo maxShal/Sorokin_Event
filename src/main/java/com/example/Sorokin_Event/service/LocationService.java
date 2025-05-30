@@ -14,10 +14,16 @@ import java.util.List;
 
 @Service
 public class LocationService {
-    @Autowired
+
     private LocationMapper mapper;
-    @Autowired
+
     private LocationRepository repository;
+
+    @Autowired
+    public LocationService(LocationMapper mapper, LocationRepository repository){
+        this.mapper = mapper;
+        this.repository = repository;
+    }
 
     public List<Location> findAll()
     {
@@ -28,28 +34,20 @@ public class LocationService {
 
     public Location findById(Long id)
     {
-        if(id==null||id<0)
-        {
-            throw new IllegalArgumentException("Неверный ID");
-        }
         LocationEntity entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Локация не найдена с ID: " + id));
         return mapper.toModel(mapper.toDto(entity));
     }
 
-    @Transactional
+
     public Location createLocation(Location location)
     {
-        if(location.getAddress().isEmpty())
-        {
-            throw new IllegalArgumentException("Неверный адрес");
-        }
         return mapper.toModel(repository.save(mapper.toEntity(mapper.toDto(location))));
     }
-    @Transactional
+
     public Location updateLocation(Location location)
     {
-        if (location.getId() < 0 || location.getId() == null)
+        if (location.getId() < 0)
         {
             throw new IllegalArgumentException("Неверный ID");
         }
@@ -65,24 +63,11 @@ public class LocationService {
         entity.setAddress(updated.getAddress());
         return mapper.toModel(repository.save(entity));
     }
-    @Transactional
-    public void deleteLocation(Location location)
-    {
-        if (location.getId() < 0 || location.getId() == null)
-        {
-            throw new IllegalArgumentException("Неверный ID");
-        }
-        repository.delete(mapper.toEntity(mapper.toDto(location)));
-    }
-    @Transactional
+
     public void deleteById(Long id)
     {
-        if (id < 0)
-        {
-            throw new IllegalArgumentException("Неверный ID");
-        }
         LocationEntity entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Данного элемента не существует"));
+                .orElseThrow(() -> new EntityNotFoundException("Данного элемента c ID: " +id +"не существует"));
         repository.deleteById(id);
     }
 }

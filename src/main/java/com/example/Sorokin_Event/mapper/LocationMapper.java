@@ -1,6 +1,7 @@
 package com.example.Sorokin_Event.mapper;
 
 import com.example.Sorokin_Event.dto.LocationDto;
+import com.example.Sorokin_Event.dto.LocationResponseDto;
 import com.example.Sorokin_Event.entity.LocationEntity;
 import com.example.Sorokin_Event.model.Location;
 import org.mapstruct.Mapper;
@@ -14,4 +15,5 @@ public interface LocationMapper {
     LocationDto toDto(LocationEntity entity);
     LocationEntity toEntity(Location location);
     Location toModel(LocationEntity entity);
+    LocationResponseDto toDtoResp(Location location);
 }

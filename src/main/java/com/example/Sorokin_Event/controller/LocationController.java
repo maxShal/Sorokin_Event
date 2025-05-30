@@ -1,6 +1,7 @@
 package com.example.Sorokin_Event.controller;
 
 import com.example.Sorokin_Event.dto.LocationDto;
+import com.example.Sorokin_Event.dto.LocationResponseDto;
 import com.example.Sorokin_Event.mapper.LocationMapper;
 import com.example.Sorokin_Event.model.Location;
 import com.example.Sorokin_Event.service.LocationService;
@@ -16,12 +17,19 @@ import java.util.List;
 @RequestMapping("/locations")
 public class LocationController {
 
-    @Autowired
+
     private LocationMapper mapper;
-    @Autowired
+
     private LocationService service;
 
-    @GetMapping("/{id}")
+    @Autowired
+    public LocationController(LocationMapper mapper, LocationService service)
+    {
+        this.service = service;
+        this.mapper = mapper;
+    }
+
+    @GetMapping("/{locationId}")
     public ResponseEntity<LocationDto> getLocationById(@PathVariable Long id)
     {
         return new ResponseEntity<>(mapper.toDto(service.findById(id)), HttpStatus.OK);
@@ -37,27 +45,20 @@ public class LocationController {
     }
 
     @PostMapping
-    public ResponseEntity<LocationDto> createLocation(@Valid @RequestBody LocationDto dto)
+    public ResponseEntity<LocationResponseDto> createLocation(@Valid @RequestBody LocationDto dto)
     {
-        return new ResponseEntity<>(mapper.toDto(service.createLocation(mapper.toModel(dto))), HttpStatus.CREATED);
+        return new ResponseEntity<>(mapper.toDtoResp(service.createLocation(mapper.toModel(dto))), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<LocationDto> updateLocation(@PathVariable Long id, @Valid @RequestBody LocationDto dto)
+    @PutMapping("/{locationId}")
+    public ResponseEntity<LocationResponseDto> updateLocation(@PathVariable Long id, @Valid @RequestBody LocationDto dto)
     {
         Location location = mapper.toModel(dto);
         location.setId(id);
-        return new ResponseEntity<>(mapper.toDto(service.updateLocation(location)), HttpStatus.OK);
+        return new ResponseEntity<>(mapper.toDtoResp(service.updateLocation(location)), HttpStatus.OK);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteLocation(@Valid @RequestBody LocationDto dto)
-    {
-        service.deleteLocation(mapper.toModel(dto));
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{locationId}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id)
     {
         service.deleteById(id);

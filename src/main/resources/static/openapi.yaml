@@ -131,7 +131,7 @@ paths:
           description: Внутренняя ошибка сервера
       summary: "Создать новую локацию. Allowed roles=[ADMIN]"
       tags:
-      - Locations
+        - Locations
   /locations/{locationId}:
     delete:
       description: "Удалить локацию по идентификатору. Нельзя удалять те локации,\
