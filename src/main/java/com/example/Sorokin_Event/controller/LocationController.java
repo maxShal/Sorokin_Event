@@ -18,7 +18,7 @@ import java.util.List;
 public class LocationController {
 
 
-    private LocationMapper mapper;
+    private final LocationMapper mapper;
 
     private LocationService service;
 

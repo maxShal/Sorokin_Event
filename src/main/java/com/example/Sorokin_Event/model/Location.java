@@ -1,12 +1,6 @@
 package com.example.Sorokin_Event.model;
-
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Objects;
 
-@Setter
-@Getter
 public class Location {
     private Long id;
 
