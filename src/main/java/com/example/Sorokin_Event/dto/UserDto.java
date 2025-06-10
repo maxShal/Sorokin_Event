@@ -2,24 +2,33 @@ package com.example.Sorokin_Event.dto;
 
 import com.example.Sorokin_Event.entity.UserEntity;
 import com.example.Sorokin_Event.model.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
 
 public class UserDto {
+
+    @NotNull
+    private Long id;
     @NotNull
     private Role role;
     @NotBlank
-
+    @Column(unique = true)
     private String login;
     @NotBlank
     private String passwordHash;
 
+    public UserDto(Long id, String login) {
+        //this.role = role;
+        this.id = id;
+        this.login = login;
+        //this.passwordHash = passwordHash;
+    }
+
+    public UserDto() {
+    }
 
     public Role getRole() {
         return role;

@@ -13,26 +13,26 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     private Role role;
     private String login;
     private String passwordHash;
 
-    public UserEntity(int id, Role role, String login, String passwordHash) {
+    public UserEntity(Long id, String login, String passwordHash, Role role ) {
 
         this.id = id;
-        this.role = role;
         this.login = login;
         this.passwordHash = passwordHash;
+        this.role = role;
     }
 
     public UserEntity(){}
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -62,10 +62,9 @@ public class UserEntity {
 
     @Override
     public boolean equals(Object o) {
-
         if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
-        return id == that.id && role == that.role && Objects.equals(login, that.login) && Objects.equals(passwordHash, that.passwordHash);
+        UserEntity entity = (UserEntity) o;
+        return Objects.equals(id, entity.id) && role == entity.role && Objects.equals(login, entity.login) && Objects.equals(passwordHash, entity.passwordHash);
     }
 
     @Override

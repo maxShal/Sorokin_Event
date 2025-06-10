@@ -1,6 +1,7 @@
 package com.example.Sorokin_Event.dto;
 
 import com.example.Sorokin_Event.model.Role;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +15,7 @@ public class UserResponseDto
     @NotNull
     private Role role;
     @NotBlank
+    @Column(unique = true)
     private String login;
     @NotBlank
     private String passwordHash;

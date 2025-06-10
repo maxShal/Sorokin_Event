@@ -4,12 +4,12 @@ import java.util.Objects;
 
 public class User {
 
-    private int id;
+    private Long id;
     private Role role;
     private String login;
     private String passwordHash;
 
-    public User(int id, Role role, String login, String passwordHash) {
+    public User(Long id, Role role, String login, String passwordHash) {
         this.id = id;
         this.role = role;
         this.login = login;
@@ -18,11 +18,11 @@ public class User {
 
     public User(){}
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -54,7 +54,7 @@ public class User {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && role == user.role && Objects.equals(login, user.login) && Objects.equals(passwordHash, user.passwordHash);
+        return Objects.equals(id, user.id) && role == user.role && Objects.equals(login, user.login) && Objects.equals(passwordHash, user.passwordHash);
     }
 
     @Override
