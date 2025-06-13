@@ -1,5 +1,6 @@
 package com.example.Sorokin_Event.security;
 
+import com.example.Sorokin_Event.security.jwt.JwtTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,8 +14,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsPasswordService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 
 @Configuration
 public class SecurityConfiguration {
@@ -27,6 +31,9 @@ public class SecurityConfiguration {
 
     @Autowired
     private CustomAccessDenied customAccessDenied;
+
+    @Autowired
+    private JwtTokenFilter filter;
 
     @Bean
     public SecurityFilterChain SecurityFilterChain(HttpSecurity http) throws Exception {
@@ -47,6 +54,8 @@ public class SecurityConfiguration {
                                 .hasAnyAuthority("ADMIN", "USER")
                                 .requestMatchers(HttpMethod.GET, "/users")
                                 .hasAnyAuthority("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/users/auth")
+                                .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users")
                                 .permitAll()
                                 .anyRequest().authenticated()
@@ -56,7 +65,7 @@ public class SecurityConfiguration {
                                 .authenticationEntryPoint(customAuthentificationEntryPoint)
                                 .accessDeniedHandler(customAccessDenied)
                 )
-                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(filter, AnonymousAuthenticationFilter.class)
                 .build();
     }
 
@@ -72,7 +81,13 @@ public class SecurityConfiguration {
     {
         var authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService( service);
-        authProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder()
+    {
+        return new BCryptPasswordEncoder();
     }
 }

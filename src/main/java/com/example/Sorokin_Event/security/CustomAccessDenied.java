@@ -31,7 +31,7 @@ public class CustomAccessDenied implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
         log.error("Ошибка доступа", accessDeniedException);
         var messageResponse = new ErrorMessageResponse(
-                "Ошибка доступа",
+                "Недостаточно прав для выполнения операции",
                 accessDeniedException.getMessage(),
                 LocalDateTime.now()
         );

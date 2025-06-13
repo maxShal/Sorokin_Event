@@ -3,6 +3,9 @@ package com.example.Sorokin_Event.controller;
 import com.example.Sorokin_Event.dto.UserDto;
 import com.example.Sorokin_Event.mapper.UserMapper;
 import com.example.Sorokin_Event.security.SignUpRequest;
+import com.example.Sorokin_Event.security.jwt.JwtAuthentificationService;
+import com.example.Sorokin_Event.security.jwt.JwtTokenResponse;
+import com.example.Sorokin_Event.security.jwt.SignInRequest;
 import com.example.Sorokin_Event.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -15,12 +18,14 @@ public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
-    private UserMapper mapper;
-    private UserService service;
+    private final UserMapper mapper;
+    private final UserService service;
+    private final JwtAuthentificationService authentificationService;
 
-    public UserController(UserMapper mapper, UserService service) {
+    public UserController(UserMapper mapper, UserService service, JwtAuthentificationService authentificationService) {
         this.mapper = mapper;
         this.service = service;
+        this.authentificationService = authentificationService;
     }
 
     @GetMapping("/userId")
@@ -31,12 +36,19 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody SignUpRequest sign)
     {
-        log.info("Логин нового пользователя: " + sign.getLogin());
+        log.info("Логин нового пользователя: {}", sign.getLogin());
         var user = service.registerUser(sign);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new UserDto(user.getId(), user.getLogin()));
     }
 
-//6:46
+    @PostMapping("/auth")
+    public ResponseEntity<JwtTokenResponse> authenticate(@Valid @RequestBody SignInRequest request)
+    {
+        log.info("Логин пользователя: {} ", request.login());
+        var token = authentificationService.authenticateUser(request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new JwtTokenResponse(token));
+    }
 
 }

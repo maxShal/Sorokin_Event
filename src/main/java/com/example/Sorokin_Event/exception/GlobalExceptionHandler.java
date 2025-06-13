@@ -18,12 +18,12 @@ public class GlobalExceptionHandler {
     ErrorMessageResponse response;
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(value =
             {
                     IllegalArgumentException.class,
                     MethodArgumentNotValidException.class})
-    public ResponseEntity<Object> handleIllegalArgument(Exception ex)
-    {
+    public ResponseEntity<Object> handleIllegalArgument(Exception ex) {
         log.error("Неверный запрос", ex);
         ErrorMessageResponse resp = new ErrorMessageResponse(
                 "Неверный запрос",
@@ -34,8 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<Object> handleAuthorizationException(AuthorizationDeniedException ex)
-    {
+    public ResponseEntity<Object> handleAuthorizationException(AuthorizationDeniedException ex) {
         log.error("Неверный запрос", ex);
         ErrorMessageResponse resp = new ErrorMessageResponse(
                 "Недостаточно прав для выполнения операции",
@@ -47,15 +46,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {
             Exception.class})
-    public ResponseEntity<Object> handleGenericException(Exception ex)
-    {
-        log.error("Непредвиденная ошибка",ex);
-        ErrorMessageResponse resp  = new ErrorMessageResponse(
+    public ResponseEntity<Object> handleGenericException(Exception ex) {
+        log.error("Непредвиденная ошибка", ex);
+        ErrorMessageResponse resp = new ErrorMessageResponse(
                 "Внутренняя ошибка",
                 ex.getMessage(),
                 LocalDateTime.now()
         );
-        return  ResponseEntity.status(418).body(resp);
+        return ResponseEntity.status(418).body(resp);
 
     }
 }

@@ -32,7 +32,7 @@ public class CustomAuthentificationEntryPoint implements AuthenticationEntryPoin
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         log.error("Ошибка аутентификации", authException);
         var messageResponse = new ErrorMessageResponse(
-                "Ошибка аутентификации",
+                "Необходима аутентификация",
                 authException.getMessage(),
                 LocalDateTime.now()
         );
