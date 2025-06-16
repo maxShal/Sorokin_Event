@@ -12,8 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/users")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -28,9 +31,9 @@ public class UserController {
         this.authentificationService = authentificationService;
     }
 
-    @GetMapping("/userId")
-    public ResponseEntity<UserDto> getUserById(@PathVariable Long id){
-        return new ResponseEntity<>(mapper.toDto(service.findById(id)), HttpStatus.OK);
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long userId){
+        return new ResponseEntity<>(mapper.toDto(service.findById(userId)), HttpStatus.OK);
     }
 
     @PostMapping
@@ -39,7 +42,7 @@ public class UserController {
         log.info("Логин нового пользователя: {}", sign.getLogin());
         var user = service.registerUser(sign);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new UserDto(user.getId(), user.getLogin()));
+                .body(new UserDto(user.getId(), user.getLogin(), user.getRole(),user.getPasswordHash()));
     }
 
     @PostMapping("/auth")

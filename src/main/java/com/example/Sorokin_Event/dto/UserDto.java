@@ -20,11 +20,11 @@ public class UserDto {
     @NotBlank
     private String passwordHash;
 
-    public UserDto(Long id, String login) {
-        //this.role = role;
+    public UserDto(Long id, String login, Role role, String passwordHash) {
         this.id = id;
         this.login = login;
-        //this.passwordHash = passwordHash;
+        this.role = role;
+        this.passwordHash = passwordHash;
     }
 
     public UserDto() {

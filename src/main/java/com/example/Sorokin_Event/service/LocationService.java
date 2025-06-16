@@ -67,6 +67,6 @@ public class LocationService {
     {
         LocationEntity entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Данного элемента c ID: " +id +"не существует"));
-        repository.deleteById(id);
+        repository.deleteById(entity.getId());
     }
 }

@@ -2,6 +2,8 @@ package com.example.Sorokin_Event.security.jwt;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,12 +19,13 @@ public class JwtAuthentificationService {
     }
 
     public String authenticateUser(SignInRequest request ){
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.login(),
                         request.password()
                 )
         );
-        return manager.generateToken(request.login());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return manager.generateToken(authentication);
     }
 }
