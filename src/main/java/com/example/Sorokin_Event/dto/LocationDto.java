@@ -14,9 +14,9 @@ public class LocationDto
     @NotBlank
     @Size(min = 1, max = 100)
     private String address;
-    @NotNull    @Min(1)
+    @NotNull
+    @Min(1)
     private int capacity;
-
     private String description;
 
     public LocationDto(String address, int capacity, String description) {

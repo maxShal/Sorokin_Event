@@ -1,5 +1,6 @@
 package com.example.Sorokin_Event.security.jwt;
 
+import com.example.Sorokin_Event.model.User;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,5 +28,15 @@ public class JwtAuthentificationService {
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return manager.generateToken(authentication);
+    }
+
+    public User getCurrentAuthentificatedUser()
+    {
+        var authantification = SecurityContextHolder.getContext().getAuthentication();
+        if(authantification == null)
+        {
+            throw new IllegalStateException("Нет юзера");
+        }
+        return (User) authantification.getPrincipal();
     }
 }
