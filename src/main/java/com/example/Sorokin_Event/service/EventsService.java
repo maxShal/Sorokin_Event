@@ -1,5 +1,6 @@
 package com.example.Sorokin_Event.service;
 
+import com.example.Sorokin_Event.dto.EventSearchRequestDto;
 import com.example.Sorokin_Event.dto.EventUpdateDto;
 import com.example.Sorokin_Event.dto.EventsResponseDto;
 import com.example.Sorokin_Event.entity.EventsEntity;
@@ -122,6 +123,36 @@ public class EventsService {
                 .ifPresent(entity::setLocationId);
         repository.save(entity);
         return mapper.toModel(entity);
+    }
+
+    public List<Events> searchEvents(EventSearchRequestDto dto)
+    {
+        var entity = repository.findEvents(
+                dto.name(),
+                dto.placesMin(),
+                dto.placesMax(),
+                dto.dateStartAfter(),
+                dto.dateStartBefore(),
+                dto.costMin(),
+                dto.costMax(),
+                dto.durationMin(),
+                dto.durationMax(),
+                dto.locationId(),
+                dto.eventStatus()
+        );
+        return entity.stream()
+                .map(mapper::toModel)
+                .toList();
+    }
+
+
+    public List<Events> findAllUserEvents()
+    {
+        var user = service.getCurrentAuthentificatedUser();
+        var userEvents = repository.findAllByOwnerIdIs(user.getId());
+        return userEvents.stream()
+                .map(mapper::toModel)
+                .toList();
     }
 
     public void checkUserCanModify(Long eventId)

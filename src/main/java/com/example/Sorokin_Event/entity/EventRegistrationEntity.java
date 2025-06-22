@@ -11,14 +11,15 @@ public class EventRegistrationEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long UserId;
+    private Long userId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
     private EventsEntity event;
 
     public EventRegistrationEntity(Long id, Long userId, EventsEntity event) {
+
         this.id = id;
-        UserId = userId;
+        this.userId = userId;
         this.event = event;
     }
 
@@ -26,7 +27,6 @@ public class EventRegistrationEntity
     }
 
     public Long getId() {
-
         return id;
     }
 
@@ -35,11 +35,11 @@ public class EventRegistrationEntity
     }
 
     public Long getUserId() {
-        return UserId;
+        return userId;
     }
 
     public void setUserId(Long userId) {
-        UserId = userId;
+        this.userId = userId;
     }
 
     public EventsEntity getEvent() {
@@ -54,19 +54,20 @@ public class EventRegistrationEntity
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         EventRegistrationEntity that = (EventRegistrationEntity) o;
-        return Objects.equals(id, that.id) && Objects.equals(UserId, that.UserId) && Objects.equals(event, that.event);
+        return Objects.equals(id, that.id) && Objects.equals(userId, that.userId) && Objects.equals(event, that.event);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, UserId, event);
+        return Objects.hash(id, userId, event);
     }
 
     @Override
-    public String toString() {
+    public String
+    toString() {
         return "EventRegistrationEntity{" +
                 "id=" + id +
-                ", UserId=" + UserId +
+                ", userId=" + userId +
                 ", event=" + event +
                 '}';
     }

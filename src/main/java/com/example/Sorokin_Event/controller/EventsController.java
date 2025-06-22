@@ -1,8 +1,6 @@
 package com.example.Sorokin_Event.controller;
 
-import com.example.Sorokin_Event.dto.EventUpdateDto;
-import com.example.Sorokin_Event.dto.EventsDto;
-import com.example.Sorokin_Event.dto.EventsResponseDto;
+import com.example.Sorokin_Event.dto.*;
 import com.example.Sorokin_Event.mapper.EventsMapper;
 import com.example.Sorokin_Event.model.Events;
 import com.example.Sorokin_Event.service.EventsService;
@@ -10,6 +8,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/events")
@@ -46,9 +46,20 @@ public class EventsController {
    @PutMapping("/{eventsId}")
     public ResponseEntity<EventsResponseDto> updateEventById(@PathVariable Long eventsId, @Valid @RequestBody EventUpdateDto dto)
     {
-        //Events events = mapper.toModel(dto);
         return new ResponseEntity<>(mapper.toRespDto(service.updateEvents(eventsId, dto)), HttpStatus.OK);
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<List<EventsDto>> searchEvents(@RequestBody EventSearchRequestDto dto)
+    {
+        var eventsList = service.searchEvents(dto);
+        return new ResponseEntity<>(eventsList.stream().map(mapper::toDto).toList(), HttpStatus.OK);
+    }
 
+
+    @GetMapping("/my")
+    public ResponseEntity<List<EventsDto>> findAllUserEvents(){
+        var eventsList = service.findAllUserEvents();
+        return new ResponseEntity<>(eventsList.stream().map(mapper::toDto).toList(), HttpStatus.OK);
+    }
 }
