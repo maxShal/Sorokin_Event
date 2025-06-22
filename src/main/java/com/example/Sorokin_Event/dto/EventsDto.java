@@ -28,7 +28,7 @@ public record EventsDto(
             int cost,
             @NotNull
             int duration,
-            int locationId,
+            Long locationId,
             EventStatus status
 ) {
 }

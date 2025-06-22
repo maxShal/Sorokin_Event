@@ -1,5 +1,6 @@
 package com.example.Sorokin_Event.controller;
 
+import com.example.Sorokin_Event.dto.EventUpdateDto;
 import com.example.Sorokin_Event.dto.EventsDto;
 import com.example.Sorokin_Event.dto.EventsResponseDto;
 import com.example.Sorokin_Event.mapper.EventsMapper;
@@ -42,11 +43,11 @@ public class EventsController {
         return new ResponseEntity<>(mapper.toDto(service.findEventById(eventsId)), HttpStatus.OK);
     }
 
-    @PutMapping("/{eventsId}")
-    public ResponseEntity<EventsResponseDto> updateEventById(@PathVariable Long eventsId, @Valid @RequestBody EventsDto dto)
+   @PutMapping("/{eventsId}")
+    public ResponseEntity<EventsResponseDto> updateEventById(@PathVariable Long eventsId, @Valid @RequestBody EventUpdateDto dto)
     {
-        Events events = mapper.toModel(dto);
-        return new ResponseEntity<>(mapper.toRespDto(service.updateEventById(eventsId, events)), HttpStatus.OK);
+        //Events events = mapper.toModel(dto);
+        return new ResponseEntity<>(mapper.toRespDto(service.updateEvents(eventsId, dto)), HttpStatus.OK);
     }
 
 
