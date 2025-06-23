@@ -3,6 +3,7 @@ package com.example.Sorokin_Event.repository;
 import com.example.Sorokin_Event.entity.EventsEntity;
 import com.example.Sorokin_Event.model.EventStatus;
 import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
@@ -23,6 +25,9 @@ public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
             @Param("id") Long eventId,
             @Param("status") EventStatus status
     );
+
+    @EntityGraph(attributePaths = {"registrationList"})
+    Optional<EventsEntity> findById(Long id);
 
 
     @Query("""
@@ -53,6 +58,7 @@ public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
             @Param("eventStatus") EventStatus eventStatus
     );
 
+    @EntityGraph(attributePaths = "registrationList")
     List<EventsEntity> findAllByOwnerIdIs(Long ownerId);
 
 

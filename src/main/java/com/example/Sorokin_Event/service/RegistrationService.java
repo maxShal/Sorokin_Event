@@ -37,11 +37,6 @@ public class RegistrationService
     {
         var currentUser = service.getCurrentAuthentificatedUser();
         var event = eventsService.findEventById(eventId);
-        if(currentUser.getId().equals(event.ownerId()))
-        {
-            throw new IllegalArgumentException("Создатель не может посетить мероприятие");
-        }
-
         if(!event.status().equals(EventStatus.WAIT_START))
         {
             throw new IllegalArgumentException("На мероприятие нельзя зарегистрироваться");
@@ -71,6 +66,7 @@ public class RegistrationService
     {
         var currentUser = service.getCurrentAuthentificatedUser();
         var event = eventsService.findEventById(eventId);
+
         if(currentUser.getId().equals(event.ownerId()))
         {
             throw new IllegalArgumentException("Вы создатель мероприятия");
@@ -81,7 +77,10 @@ public class RegistrationService
             throw new IllegalArgumentException("Нельзя удалить регистрацию с мероприятия");
         }
         var registration = repository.findRegistration(currentUser.getId(), eventId);
-
+        if(registration.isEmpty())
+        {
+            throw new IllegalArgumentException("Вы не зарегистрированы на мероприятие");
+        }
         repository.delete(registration.orElseThrow());
     }
 

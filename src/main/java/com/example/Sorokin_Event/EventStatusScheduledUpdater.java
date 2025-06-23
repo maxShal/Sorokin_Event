@@ -1,5 +1,6 @@
-package com.example.Sorokin_Event.model;
+package com.example.Sorokin_Event;
 
+import com.example.Sorokin_Event.model.EventStatus;
 import com.example.Sorokin_Event.repository.EventsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

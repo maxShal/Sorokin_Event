@@ -39,7 +39,7 @@ public class EventsService {
         this.service = service;
     }
 
-    public Events createEvents(EventsResponseDto events)
+    public Events createEvent(Events events)
     {
         var location = locationService.findById(events.locationId());
         if(location.getCapacity() < events.maxPlaces())
@@ -88,7 +88,7 @@ public class EventsService {
         //repository.deleteById(entity.getId());
     }
 
-    public Events updateEvents(Long eventId, EventUpdateDto dto)
+    public Events updateEvents(Long eventId, Events dto)
     {
         checkUserCanModify(eventId);
         EventsEntity entity = repository.findById(eventId)

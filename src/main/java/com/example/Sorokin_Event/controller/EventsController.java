@@ -26,7 +26,8 @@ public class EventsController {
     @PostMapping
     public ResponseEntity<EventsDto> createEvents(@Valid @RequestBody EventsResponseDto dto)
     {
-        return new ResponseEntity<>(mapper.toDto(service.createEvents(dto)), HttpStatus.CREATED);
+        var entity = mapper.toModel(dto);
+        return new ResponseEntity<>(mapper.toDto(service.createEvent(entity)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{eventsId}")
@@ -46,7 +47,8 @@ public class EventsController {
    @PutMapping("/{eventsId}")
     public ResponseEntity<EventsResponseDto> updateEventById(@PathVariable Long eventsId, @Valid @RequestBody EventUpdateDto dto)
     {
-        return new ResponseEntity<>(mapper.toRespDto(service.updateEvents(eventsId, dto)), HttpStatus.OK);
+        var entity = mapper.toModel(dto);
+        return new ResponseEntity<>(mapper.toRespDto(service.updateEvents(eventsId, entity)), HttpStatus.OK);
     }
 
     @PostMapping("/search")

@@ -23,6 +23,7 @@ public record EventsResponseDto(
         int cost,
         @NotNull
         int duration,
+        @NotNull
         Long locationId
 ) {
 }

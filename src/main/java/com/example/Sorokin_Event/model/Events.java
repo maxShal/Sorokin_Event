@@ -12,13 +12,13 @@ public record Events(
         Long id,
         String name,
         Long ownerId,
-        int maxPlaces,
+        Integer maxPlaces,
         List<EventRegistration> registrationList,
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime date,
-        int cost,
-        int duration,
-        int locationId,
+        Integer cost,
+        Integer duration,
+        Long locationId,
         EventStatus status
 )
 {
