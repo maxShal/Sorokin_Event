@@ -1,9 +1,8 @@
 package com.example.Sorokin_Event.controller;
 
 
-import com.example.Sorokin_Event.dto.EventsDto;
-import com.example.Sorokin_Event.entity.EventRegistrationEntity;
-import com.example.Sorokin_Event.mapper.EventsMapper;
+import com.example.Sorokin_Event.dto.EventDto;
+import com.example.Sorokin_Event.mapper.EventMapper;
 import com.example.Sorokin_Event.service.RegistrationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +16,9 @@ public class RegistrationController
 {
     private final RegistrationService service;
 
-    private final EventsMapper mapper;
+    private final EventMapper mapper;
 
-    public RegistrationController(RegistrationService service, EventsMapper mapper) {
+    public RegistrationController(RegistrationService service, EventMapper mapper) {
         this.service = service;
 
         this.mapper = mapper;
@@ -40,7 +39,7 @@ public class RegistrationController
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<EventsDto>> getAllRegistrations()
+    public ResponseEntity<List<EventDto>> getAllRegistrations()
     {
         var foundEvents = service.getAllRegistrations();
         return new ResponseEntity<>(foundEvents.stream().map(

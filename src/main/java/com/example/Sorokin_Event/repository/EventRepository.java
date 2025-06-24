@@ -1,6 +1,6 @@
 package com.example.Sorokin_Event.repository;
 
-import com.example.Sorokin_Event.entity.EventsEntity;
+import com.example.Sorokin_Event.entity.EventEntity;
 import com.example.Sorokin_Event.model.EventStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
+public interface EventRepository extends JpaRepository<EventEntity,Long> {
 
     @Modifying
     @Transactional
@@ -27,7 +27,7 @@ public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
     );
 
     @EntityGraph(attributePaths = {"registrationList"})
-    Optional<EventsEntity> findById(Long id);
+    Optional<EventEntity> findById(Long id);
 
 
     @Query("""
@@ -44,7 +44,7 @@ public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
             AND (:locationId IS NULL OR e.locationId = :locationId) 
             AND (:eventStatus IS NULL OR e.status = :eventStatus)
             """)
-    List<EventsEntity> findEvents(
+    List<EventEntity> findEvents(
             @Param("name") String name,
             @Param("placesMin") Integer placesMin,
             @Param("placesMax") Integer placesMax,
@@ -59,7 +59,7 @@ public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
     );
 
     @EntityGraph(attributePaths = "registrationList")
-    List<EventsEntity> findAllByOwnerIdIs(Long ownerId);
+    List<EventEntity> findAllByOwnerIdIs(Long ownerId);
 
 
     @Query("""
@@ -70,7 +70,7 @@ public interface EventsRepository extends JpaRepository<EventsEntity,Long> {
     List<Long> findStartedEventsWithStatus(@Param("status") EventStatus status);
 
     @Query(value = """
-        SELECT e.id from events e
+        SELECT e.id from event e
         where e.date + INTERVAL '1 minute' * e.duration < NOW()
         AND e.status = :status
     """, nativeQuery = true)

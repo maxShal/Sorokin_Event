@@ -1,9 +1,8 @@
 package com.example.Sorokin_Event.controller;
 
 import com.example.Sorokin_Event.dto.*;
-import com.example.Sorokin_Event.mapper.EventsMapper;
-import com.example.Sorokin_Event.model.Events;
-import com.example.Sorokin_Event.service.EventsService;
+import com.example.Sorokin_Event.mapper.EventMapper;
+import com.example.Sorokin_Event.service.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,21 +12,21 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/events")
-public class EventsController {
+public class EventController {
 
-    private final EventsMapper mapper;
-    private final EventsService service;
+    private final EventMapper mapper;
+    private final EventService service;
 
-    public EventsController(EventsMapper mapper, EventsService service) {
+    public EventController(EventMapper mapper, EventService service) {
         this.mapper = mapper;
         this.service = service;
     }
 
     @PostMapping
-    public ResponseEntity<EventsDto> createEvents(@Valid @RequestBody EventsResponseDto dto)
+    public ResponseEntity<EventDto> createEvents(@Valid @RequestBody EventResponseDto dto)
     {
-        var entity = mapper.toModel(dto);
-        return new ResponseEntity<>(mapper.toDto(service.createEvent(entity)), HttpStatus.CREATED);
+        var model = mapper.toModel(dto);
+        return new ResponseEntity<>(mapper.toDto(service.createEvent(model)), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{eventsId}")
@@ -39,20 +38,20 @@ public class EventsController {
     }
 
     @GetMapping("/{eventsId}")
-    public ResponseEntity<EventsDto> getEventById(@PathVariable Long eventsId)
+    public ResponseEntity<EventDto> getEventById(@PathVariable Long eventsId)
     {
         return new ResponseEntity<>(mapper.toDto(service.findEventById(eventsId)), HttpStatus.OK);
     }
 
    @PutMapping("/{eventsId}")
-    public ResponseEntity<EventsResponseDto> updateEventById(@PathVariable Long eventsId, @Valid @RequestBody EventUpdateDto dto)
+    public ResponseEntity<EventResponseDto> updateEventById(@PathVariable Long eventsId, @Valid @RequestBody EventUpdateDto dto)
     {
-        var entity = mapper.toModel(dto);
-        return new ResponseEntity<>(mapper.toRespDto(service.updateEvents(eventsId, entity)), HttpStatus.OK);
+        var model = mapper.toModel(dto);
+        return new ResponseEntity<>(mapper.toRespDto(service.updateEvents(eventsId, model)), HttpStatus.OK);
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<EventsDto>> searchEvents(@RequestBody EventSearchRequestDto dto)
+    public ResponseEntity<List<EventDto>> searchEvents(@RequestBody EventSearchRequestDto dto)
     {
         var eventsList = service.searchEvents(dto);
         return new ResponseEntity<>(eventsList.stream().map(mapper::toDto).toList(), HttpStatus.OK);
@@ -60,7 +59,7 @@ public class EventsController {
 
 
     @GetMapping("/my")
-    public ResponseEntity<List<EventsDto>> findAllUserEvents(){
+    public ResponseEntity<List<EventDto>> findAllUserEvents(){
         var eventsList = service.findAllUserEvents();
         return new ResponseEntity<>(eventsList.stream().map(mapper::toDto).toList(), HttpStatus.OK);
     }

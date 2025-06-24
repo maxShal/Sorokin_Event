@@ -1,7 +1,7 @@
 package com.example.Sorokin_Event.repository;
 
 import com.example.Sorokin_Event.entity.EventRegistrationEntity;
-import com.example.Sorokin_Event.entity.EventsEntity;
+import com.example.Sorokin_Event.entity.EventEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,5 +25,5 @@ public interface RegistrationRepository extends JpaRepository<EventRegistrationE
         SELECT reg.event FROM EventRegistrationEntity reg
         WHERE reg.userId = :userId
     """)
-    List<EventsEntity> findRegisteredEvents(@Param("userId") Long userId);
+    List<EventEntity> findRegisteredEvents(@Param("userId") Long userId);
 }

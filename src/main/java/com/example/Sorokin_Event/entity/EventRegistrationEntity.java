@@ -14,9 +14,9 @@ public class EventRegistrationEntity
     private Long userId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    private EventsEntity event;
+    private EventEntity event;
 
-    public EventRegistrationEntity(Long id, Long userId, EventsEntity event) {
+    public EventRegistrationEntity(Long id, Long userId, EventEntity event) {
 
         this.id = id;
         this.userId = userId;
@@ -42,11 +42,11 @@ public class EventRegistrationEntity
         this.userId = userId;
     }
 
-    public EventsEntity getEvent() {
+    public EventEntity getEvent() {
         return event;
     }
 
-    public void setEvent(EventsEntity event) {
+    public void setEvent(EventEntity event) {
         this.event = event;
     }
 

@@ -1,7 +1,7 @@
 package com.example.Sorokin_Event;
 
 import com.example.Sorokin_Event.model.EventStatus;
-import com.example.Sorokin_Event.repository.EventsRepository;
+import com.example.Sorokin_Event.repository.EventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +15,9 @@ public class EventStatusScheduledUpdater
 
     private final static Logger log = LoggerFactory.getLogger(EventStatusScheduledUpdater.class);
 
-    private final EventsRepository eventRepository;
+    private final EventRepository eventRepository;
 
-    public EventStatusScheduledUpdater(EventsRepository eventRepository) {
+    public EventStatusScheduledUpdater(EventRepository eventRepository) {
         this.eventRepository = eventRepository;
     }
 

@@ -1,19 +1,17 @@
 package com.example.Sorokin_Event.entity;
 
-import com.example.Sorokin_Event.model.EventRegistration;
 import com.example.Sorokin_Event.model.EventStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "events")
-public class EventsEntity {
+public class EventEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +43,7 @@ public class EventsEntity {
 
         private EventStatus status;
 
-        public EventsEntity(Long id, String name, Long ownerId, int maxPlaces, List<EventRegistrationEntity> registrationList, LocalDateTime date, int cost, int duration, Long locationId, EventStatus status) {
+        public EventEntity(Long id, String name, Long ownerId, int maxPlaces, List<EventRegistrationEntity> registrationList, LocalDateTime date, int cost, int duration, Long locationId, EventStatus status) {
                 this.id = id;
                 this.name = name;
                 this.ownerId = ownerId;
@@ -58,7 +56,7 @@ public class EventsEntity {
                 this.status = status;
         }
 
-        public EventsEntity() {
+        public EventEntity() {
         }
 
         public Long getId() {
@@ -145,7 +143,7 @@ public class EventsEntity {
         @Override
         public boolean equals(Object o) {
                 if (o == null || getClass() != o.getClass()) return false;
-                EventsEntity entity = (EventsEntity) o;
+                EventEntity entity = (EventEntity) o;
                 return maxPlaces == entity.maxPlaces && cost == entity.cost && duration == entity.duration && locationId == entity.locationId && Objects.equals(id, entity.id) && Objects.equals(name, entity.name) && Objects.equals(ownerId, entity.ownerId) && Objects.equals(registrationList, entity.registrationList) && Objects.equals(date, entity.date) && status == entity.status;
         }
 

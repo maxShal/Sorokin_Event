@@ -1,37 +1,34 @@
 package com.example.Sorokin_Event.service;
 
 import com.example.Sorokin_Event.dto.EventSearchRequestDto;
-import com.example.Sorokin_Event.dto.EventUpdateDto;
-import com.example.Sorokin_Event.dto.EventsResponseDto;
-import com.example.Sorokin_Event.entity.EventsEntity;
-import com.example.Sorokin_Event.mapper.EventsMapper;
+import com.example.Sorokin_Event.entity.EventEntity;
+import com.example.Sorokin_Event.mapper.EventMapper;
+import com.example.Sorokin_Event.model.Event;
 import com.example.Sorokin_Event.model.EventStatus;
-import com.example.Sorokin_Event.model.Events;
 import com.example.Sorokin_Event.model.Role;
-import com.example.Sorokin_Event.repository.EventsRepository;
+import com.example.Sorokin_Event.repository.EventRepository;
 import com.example.Sorokin_Event.security.jwt.JwtAuthentificationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class EventsService {
-    private final static Logger log = LoggerFactory.getLogger(EventsService.class);
+public class EventService {
+    private final static Logger log = LoggerFactory.getLogger(EventService.class);
 
-    private final EventsRepository repository;
+    private final EventRepository repository;
 
     private final LocationService locationService;
 
-    private final EventsMapper mapper;
+    private final EventMapper mapper;
 
     private final JwtAuthentificationService service;
 
-    public EventsService(EventsRepository repository, LocationService locationService, EventsMapper mapper, JwtAuthentificationService service) {
+    public EventService(EventRepository repository, LocationService locationService, EventMapper mapper, JwtAuthentificationService service) {
 
         this.repository = repository;
         this.locationService = locationService;
@@ -39,32 +36,32 @@ public class EventsService {
         this.service = service;
     }
 
-    public Events createEvent(Events events)
+    public Event createEvent(Event event)
     {
-        var location = locationService.findById(events.locationId());
-        if(location.getCapacity() < events.maxPlaces())
+        var location = locationService.findById(event.locationId());
+        if(location.getCapacity() < event.maxPlaces())
         {
-            throw new IllegalArgumentException("На мероприятии приглашены " + location.getCapacity() + "людей, но вместимость = " + events.maxPlaces());
+            throw new IllegalArgumentException("На мероприятии приглашены " + location.getCapacity() + "людей, но вместимость = " + event.maxPlaces());
         }
         var currentUser = service.getCurrentAuthentificatedUser();
-        var entity = new EventsEntity(
+        var entity = new EventEntity(
                 null,
-                events.name(),
+                event.name(),
                 currentUser.getId(),
-                events.maxPlaces(),
+                event.maxPlaces(),
                 List.of(),
-                events.date(),
-                events.cost(),
-                events.duration(),
-                events.locationId(),
+                event.date(),
+                event.cost(),
+                event.duration(),
+                event.locationId(),
                 EventStatus.WAIT_START
         );
         return mapper.toModel(repository.save(entity));
     }
 
-    public Events findEventById(Long id)
+    public Event findEventById(Long id)
     {
-        EventsEntity events = repository.findById(id)
+        EventEntity events = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Событие не найдено."));
         return  mapper.toModel(events);
     }
@@ -72,7 +69,7 @@ public class EventsService {
     public void deleteEventsById(Long id)
     {
         checkUserCanModify(id);
-        EventsEntity entity = repository.findById(id)
+        EventEntity entity = repository.findById(id)
                         .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
         if(entity.getStatus().equals(EventStatus.CANCELLED))
         {
@@ -88,10 +85,10 @@ public class EventsService {
         //repository.deleteById(entity.getId());
     }
 
-    public Events updateEvents(Long eventId, Events dto)
+    public Event updateEvents(Long eventId, Event dto)
     {
         checkUserCanModify(eventId);
-        EventsEntity entity = repository.findById(eventId)
+        EventEntity entity = repository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("Событие не найдено"));
         if((dto.maxPlaces() != null) && (dto.maxPlaces() < entity.getRegistrationList().size()))
         {
@@ -125,7 +122,7 @@ public class EventsService {
         return mapper.toModel(entity);
     }
 
-    public List<Events> searchEvents(EventSearchRequestDto dto)
+    public List<Event> searchEvents(EventSearchRequestDto dto)
     {
         var entity = repository.findEvents(
                 dto.name(),
@@ -146,7 +143,7 @@ public class EventsService {
     }
 
 
-    public List<Events> findAllUserEvents()
+    public List<Event> findAllUserEvents()
     {
         var user = service.getCurrentAuthentificatedUser();
         var userEvents = repository.findAllByOwnerIdIs(user.getId());

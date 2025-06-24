@@ -1,10 +1,10 @@
 package com.example.Sorokin_Event.service;
 
 import com.example.Sorokin_Event.entity.EventRegistrationEntity;
-import com.example.Sorokin_Event.mapper.EventsMapper;
+import com.example.Sorokin_Event.mapper.EventMapper;
 import com.example.Sorokin_Event.model.EventStatus;
-import com.example.Sorokin_Event.model.Events;
-import com.example.Sorokin_Event.repository.EventsRepository;
+import com.example.Sorokin_Event.model.Event;
+import com.example.Sorokin_Event.repository.EventRepository;
 import com.example.Sorokin_Event.repository.RegistrationRepository;
 import com.example.Sorokin_Event.security.jwt.JwtAuthentificationService;
 import org.springframework.stereotype.Service;
@@ -16,19 +16,19 @@ public class RegistrationService
 {
     private final JwtAuthentificationService service;
 
-    private final EventsService eventsService;
+    private final EventService eventService;
 
     private final RegistrationRepository repository;
 
-    private final EventsRepository eventsRepository;
+    private final EventRepository eventRepository;
 
-    private final EventsMapper mapper;
+    private final EventMapper mapper;
 
-    public RegistrationService(JwtAuthentificationService service, EventsService eventsService, RegistrationRepository repository, EventsRepository eventsRepository, EventsMapper mapper) {
+    public RegistrationService(JwtAuthentificationService service, EventService eventService, RegistrationRepository repository, EventRepository eventRepository, EventMapper mapper) {
         this.service = service;
-        this.eventsService = eventsService;
+        this.eventService = eventService;
         this.repository = repository;
-        this.eventsRepository = eventsRepository;
+        this.eventRepository = eventRepository;
         this.mapper = mapper;
 
     }
@@ -36,7 +36,7 @@ public class RegistrationService
     public void registrationOnEvent(Long eventId)
     {
         var currentUser = service.getCurrentAuthentificatedUser();
-        var event = eventsService.findEventById(eventId);
+        var event = eventService.findEventById(eventId);
         if(!event.status().equals(EventStatus.WAIT_START))
         {
             throw new IllegalArgumentException("На мероприятие нельзя зарегистрироваться");
@@ -57,7 +57,7 @@ public class RegistrationService
                 new EventRegistrationEntity(
                         null,
                         currentUser.getId(),
-                        eventsRepository.findById(eventId).orElseThrow()
+                        eventRepository.findById(eventId).orElseThrow()
                 )
         );
     }
@@ -65,7 +65,7 @@ public class RegistrationService
     public void deleteRegistrationOnEvent(Long eventId)
     {
         var currentUser = service.getCurrentAuthentificatedUser();
-        var event = eventsService.findEventById(eventId);
+        var event = eventService.findEventById(eventId);
 
         if(currentUser.getId().equals(event.ownerId()))
         {
@@ -76,15 +76,13 @@ public class RegistrationService
         {
             throw new IllegalArgumentException("Нельзя удалить регистрацию с мероприятия");
         }
-        var registration = repository.findRegistration(currentUser.getId(), eventId);
-        if(registration.isEmpty())
-        {
-            throw new IllegalArgumentException("Вы не зарегистрированы на мероприятие");
-        }
-        repository.delete(registration.orElseThrow());
+        var registration = repository.findRegistration(currentUser.getId(), eventId)
+                .orElseThrow( () -> new IllegalArgumentException("Вы не зарегистрированы на мероприятие"));
+
+        repository.delete(registration);
     }
 
-    public List<Events> getAllRegistrations()
+    public List<Event> getAllRegistrations()
     {
         var currentUser = service.getCurrentAuthentificatedUser();
         var events = repository.findRegisteredEvents(currentUser.getId());
