@@ -20,7 +20,7 @@ public interface EventRepository extends JpaRepository<EventEntity,Long> {
 
     @Modifying
     @Transactional
-    @Query("update EventsEntity e set e.status = :status where e.id = :id")
+    @Query("update EventEntity e set e.status = :status where e.id = :id")
     void changeEventStatus(
             @Param("id") Long eventId,
             @Param("status") EventStatus status
@@ -31,7 +31,7 @@ public interface EventRepository extends JpaRepository<EventEntity,Long> {
 
 
     @Query("""
-            SELECT e FROM EventsEntity e 
+            SELECT e FROM EventEntity e 
             WHERE (:name IS NULL OR e.name LIKE %:name%) 
             AND (:placesMin IS NULL OR e.maxPlaces >= :placesMin) 
             AND (:placesMax IS NULL OR e.maxPlaces <= :placesMax) 
@@ -63,7 +63,7 @@ public interface EventRepository extends JpaRepository<EventEntity,Long> {
 
 
     @Query("""
-        SELECT e.id from EventsEntity e
+        SELECT e.id from EventEntity e
         where e.date < CURRENT_TIMESTAMP
         AND e.status = :status
     """)
