@@ -1,9 +1,13 @@
 package com.example.Sorokin_Event.service;
 
+import com.example.Sorokin_Event.EventSender;
+import com.example.Sorokin_Event.FieldChange;
+import com.example.Sorokin_Event.KafkaChangeEvent;
 import com.example.Sorokin_Event.dto.EventSearchRequestDto;
 import com.example.Sorokin_Event.entity.EventEntity;
 import com.example.Sorokin_Event.mapper.EventMapper;
 import com.example.Sorokin_Event.model.Event;
+import com.example.Sorokin_Event.model.EventRegistration;
 import com.example.Sorokin_Event.model.EventStatus;
 import com.example.Sorokin_Event.model.Role;
 import com.example.Sorokin_Event.repository.EventRepository;
@@ -11,10 +15,14 @@ import com.example.Sorokin_Event.security.jwt.JwtAuthentificationService;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.event.KafkaEvent;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -28,12 +36,15 @@ public class EventService {
 
     private final JwtAuthentificationService service;
 
-    public EventService(EventRepository repository, LocationService locationService, EventMapper mapper, JwtAuthentificationService service) {
+    private final EventSender eventSender;
+
+    public EventService(EventRepository repository, LocationService locationService, EventMapper mapper, JwtAuthentificationService service, EventSender eventSender) {
 
         this.repository = repository;
         this.locationService = locationService;
         this.mapper = mapper;
         this.service = service;
+        this.eventSender = eventSender;
     }
 
     public Event createEvent(Event event)
@@ -56,7 +67,41 @@ public class EventService {
                 event.locationId(),
                 EventStatus.WAIT_START
         );
-        return mapper.toModel(repository.save(entity));
+
+        var savedEvent = mapper.toModel(repository.save(entity));
+
+        var changeName = new FieldChange<String>();
+        changeName.setNewField(savedEvent.name());
+        var changeMaxPlaces = new FieldChange<Integer>();
+        changeMaxPlaces.setNewField(savedEvent.maxPlaces());
+        var changeDate = new FieldChange<LocalDateTime>();
+        changeDate.setNewField(savedEvent.date());
+        var changeCost = new FieldChange<Integer>();
+        changeCost.setNewField(savedEvent.cost());
+        var changeDuration = new FieldChange<Integer>();
+        changeDuration.setNewField(savedEvent.duration());
+        var changeLocationId = new FieldChange<Long>();
+        changeLocationId.setNewField(savedEvent.locationId());
+        var changeStatus = new FieldChange<EventStatus>();
+        changeStatus.setNewField(savedEvent.status());
+
+
+        eventSender.sendEvent(new KafkaChangeEvent(
+                savedEvent.id(),
+                List.of(),
+                savedEvent.ownerId(),
+                null,
+                changeName,
+                changeMaxPlaces,
+                changeDate,
+                changeCost,
+                changeDuration,
+                changeLocationId,
+                changeStatus
+
+        ));
+
+        return savedEvent;
     }
 
     public Event findEventById(Long id)
@@ -80,9 +125,26 @@ public class EventService {
         {
             throw new IllegalArgumentException("Событие нельзя отменить");
         }
+        var changeStatus = new FieldChange<EventStatus>();
+        changeStatus.setNewField(EventStatus.CANCELLED);
+
+        var currentUser = service.getCurrentAuthentificatedUser();
+
+        eventSender.sendEvent(new KafkaChangeEvent(
+                id,
+                List.of(),
+                entity.getOwnerId(),
+                currentUser.getId(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                changeStatus
+
+        ));
         repository.changeEventStatus(id, EventStatus.CANCELLED);
-        //entity.setStatus(EventStatus.CANCELLED);
-        //repository.deleteById(entity.getId());
     }
 
     public Event updateEvents(Long eventId, Event dto)
@@ -118,8 +180,48 @@ public class EventService {
                 .ifPresent(entity::setDuration);
         Optional.ofNullable(dto.locationId())
                 .ifPresent(entity::setLocationId);
-        repository.save(entity);
-        return mapper.toModel(entity);
+        var savedEvent =  mapper.toModel(repository.save(entity));
+
+        var changeName = new FieldChange<String>();
+        changeName.setOldField(entity.getName());
+        changeName.setNewField(savedEvent.name());
+        var changeMaxPlaces = new FieldChange<Integer>();
+        changeMaxPlaces.setOldField(entity.getMaxPlaces());
+        changeMaxPlaces.setNewField(savedEvent.maxPlaces());
+        var changeDate = new FieldChange<LocalDateTime>();
+        changeDate.setOldField(entity.getDate());
+        changeDate.setNewField(savedEvent.date());
+        var changeCost = new FieldChange<Integer>();
+        changeCost.setOldField(entity.getCost());
+        changeCost.setNewField(savedEvent.cost());
+        var changeDuration = new FieldChange<Integer>();
+        changeDuration.setOldField(entity.getDuration());
+        changeDuration.setNewField(savedEvent.duration());
+        var changeLocationId = new FieldChange<Long>();
+        changeLocationId.setOldField(entity.getLocationId());
+        changeLocationId.setNewField(savedEvent.locationId());
+        var changeStatus = new FieldChange<EventStatus>();
+        changeStatus.setOldField(entity.getStatus());
+        changeStatus.setNewField(savedEvent.status());
+
+        var currentUser = service.getCurrentAuthentificatedUser();
+
+        eventSender.sendEvent(new KafkaChangeEvent(
+                savedEvent.id(),
+                savedEvent.registrationList().stream().map(EventRegistration::userId).collect(Collectors.toList()),
+                savedEvent.ownerId(),
+                currentUser.getId(),
+                changeName,
+                changeMaxPlaces,
+                changeDate,
+                changeCost,
+                changeDuration,
+                changeLocationId,
+                changeStatus
+
+        ));
+
+        return savedEvent;
     }
 
     public List<Event> searchEvents(EventSearchRequestDto dto)
