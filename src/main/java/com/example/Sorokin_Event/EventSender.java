@@ -20,7 +20,7 @@ public class EventSender {
     {
         log.info("Sending event: event={}", kafkaEvent);
         var result = kafkaTemplate.send(
-                "books-topic",
+                "event-topic",
                 kafkaEvent.getEventId(),
                 kafkaEvent
         );
